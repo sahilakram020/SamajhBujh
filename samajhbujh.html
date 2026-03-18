@@ -9,60 +9,48 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
   body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #F5F5F7; color: #1D1D1F; height: 100dvh; display: flex; flex-direction: column; align-items: center; }
   .container { width: 100%; max-width: 620px; height: 100dvh; display: flex; flex-direction: column; }
-
   header { padding: 14px 20px 10px; display: flex; align-items: center; justify-content: space-between; background: rgba(245,245,247,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #E5E5EA; }
   .header-left h1 { font-size: 18px; font-weight: 600; color: #1D1D1F; letter-spacing: -0.3px; }
   .header-left p { font-size: 11px; color: #86868B; margin-top: 1px; }
   .status-dot { width: 7px; height: 7px; background: #30D158; border-radius: 50%; display: inline-block; margin-right: 4px; }
   .header-right { display: flex; gap: 8px; align-items: center; }
-
   .icon-btn { background: none; border: none; color: #1D1D1F; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: background 0.1s; }
   .icon-btn:hover { background: #E8E8ED; }
   .icon-btn svg { width: 20px; height: 20px; }
-
   .new-chat-btn { background: #1D1D1F; color: white; border: none; border-radius: 20px; padding: 7px 14px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
   .new-chat-btn:hover { opacity: 0.8; }
-
   .chips-wrap { padding: 10px 20px 8px; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; background: #F5F5F7; }
   .chips-wrap::-webkit-scrollbar { display: none; }
   .chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; border: none; background: #E8E8ED; color: #1D1D1F; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; flex-shrink: 0; }
   .chip.active { background: #1D1D1F; color: #FFFFFF; }
-
   .chat { flex: 1; overflow-y: auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; }
   .chat::-webkit-scrollbar { display: none; }
-
   .msg { max-width: 78%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.55; animation: pop 0.18s ease; }
   @keyframes pop { from { opacity: 0; transform: scale(0.97) translateY(4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
   .msg.bot { background: #FFFFFF; color: #1D1D1F; align-self: flex-start; border-bottom-left-radius: 5px; }
   .msg.user { background: #1D1D1F; color: #FFFFFF; align-self: flex-end; border-bottom-right-radius: 5px; }
   .msg.typing { background: #FFFFFF; align-self: flex-start; border-bottom-left-radius: 5px; padding: 14px 18px; }
-
   .dots { display: flex; gap: 4px; align-items: center; }
   .dots span { width: 6px; height: 6px; background: #86868B; border-radius: 50%; animation: bounce 1.2s infinite; }
   .dots span:nth-child(2) { animation-delay: 0.15s; }
   .dots span:nth-child(3) { animation-delay: 0.3s; }
   @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
-
   .suggestions { padding: 0 20px 8px; display: flex; flex-direction: column; gap: 6px; }
   .suggestion { background: #FFFFFF; border: none; border-radius: 12px; padding: 11px 15px; font-size: 14px; color: #1D1D1F; cursor: pointer; text-align: left; font-family: inherit; font-weight: 400; transition: background 0.1s; display: flex; align-items: center; justify-content: space-between; }
   .suggestion:hover { background: #EBEBF0; }
   .suggestion-arrow { color: #86868B; font-size: 16px; flex-shrink: 0; margin-left: 10px; }
-
   .ad { text-align: center; font-size: 11px; color: #86868B; padding: 4px 20px 2px; }
   .ad a { color: #0066CC; text-decoration: none; }
-
-  .input-bar { padding: 8px 16px 18px; background: rgba(245,245,247,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid #E5E5EA; }
+  .input-bar { padding: 8px 16px 18px; background: rgba(245,245,247,0.95); backdrop-filter: blur(20px); display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid #E5E5EA; }
   .input-wrap { flex: 1; background: #FFFFFF; border-radius: 22px; display: flex; align-items: flex-end; padding: 8px 14px; border: 1px solid #E0E0E5; transition: border-color 0.15s; }
   .input-wrap:focus-within { border-color: #1D1D1F; }
   textarea { flex: 1; border: none; outline: none; font-size: 15px; font-family: inherit; color: #1D1D1F; background: transparent; resize: none; min-height: 22px; max-height: 88px; line-height: 1.45; padding: 0; }
   textarea::placeholder { color: #86868B; }
-
   .send-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #1D1D1F; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.15s, transform 0.1s; margin-bottom: 1px; }
   .send-btn:hover { opacity: 0.82; }
   .send-btn:active { transform: scale(0.93); }
   .send-btn:disabled { background: #C7C7CC; cursor: not-allowed; }
   .send-btn svg { width: 15px; height: 15px; }
-
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 50; backdrop-filter: blur(2px); }
   .overlay.open { display: block; }
   .panel { position: fixed; top: 0; right: 0; width: 280px; height: 100dvh; background: #FFFFFF; z-index: 51; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.25s ease; box-shadow: -4px 0 20px rgba(0,0,0,0.08); }
@@ -82,7 +70,6 @@
 </head>
 <body>
 <div class="container">
-
   <header>
     <div class="header-left">
       <h1>SamajhBujh</h1>
@@ -146,10 +133,9 @@
 </div>
 
 <script>
-// OpenRouter — works directly from browser, no CORS issues
-const OR_KEY = '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';
+const OR_KEY = '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';
 const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL  = 'meta-llama/llama-3.3-70b-instruct:free'; // free model on OpenRouter
+const MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 
 let topic = 'relationship';
 let busy = false;
@@ -163,7 +149,7 @@ const SYSTEM = () => `You are SamajhBujh, an honest and caring Indian life advis
 You deeply understand Indian social reality:
 - Joint families and their politics
 - Arranged marriages and parental pressure
-- "Log kya kahenge" culture  
+- "Log kya kahenge" culture
 - Middle class Indian struggles
 - Office politics, friendship drama
 
@@ -173,7 +159,7 @@ Your style:
 - Be honest but kind — give real advice, not just validation
 - No Western therapy jargon
 - Practical advice that actually works in Indian context
-- Sometimes ask one thoughtful question to make them think
+- Sometimes ask one thoughtful question
 
 Current topic: ${topic}`;
 
@@ -300,22 +286,20 @@ async function send() {
   const typing = addMsg('', 'typing');
 
   try {
-    const messages = [
-      { role: 'system', content: SYSTEM() },
-      ...msgs
-    ];
-
     const res = await fetch(OR_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + OR_KEY,
-        'HTTP-Referer': window.location.href,
+        'HTTP-Referer': 'https://sahilakram020.github.io',
         'X-Title': 'SamajhBujh'
       },
       body: JSON.stringify({
         model: MODEL,
-        messages: messages,
+        messages: [
+          { role: 'system', content: SYSTEM() },
+          ...msgs
+        ],
         max_tokens: 400,
         temperature: 0.85
       })
