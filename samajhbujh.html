@@ -63,7 +63,6 @@
   .send-btn:disabled { background: #C7C7CC; cursor: not-allowed; }
   .send-btn svg { width: 15px; height: 15px; }
 
-  /* HISTORY PANEL */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 50; backdrop-filter: blur(2px); }
   .overlay.open { display: block; }
   .panel { position: fixed; top: 0; right: 0; width: 280px; height: 100dvh; background: #FFFFFF; z-index: 51; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.25s ease; box-shadow: -4px 0 20px rgba(0,0,0,0.08); }
@@ -137,7 +136,6 @@
   </div>
 </div>
 
-<!-- HISTORY -->
 <div class="overlay" id="overlay" onclick="closeHistory()"></div>
 <div class="panel" id="panel">
   <div class="panel-header">
@@ -148,31 +146,34 @@
 </div>
 
 <script>
-// ✅ CORRECT Gemini API URL
-const KEY = 'AIzaSyDWDZj56KijxKpdHFV1ifUHHmySnleAu5o';
-const URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + KEY;
+// OpenRouter — works directly from browser, no CORS issues
+const OR_KEY = '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';
+const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const MODEL  = 'meta-llama/llama-3.3-70b-instruct:free'; // free model on OpenRouter
 
 let topic = 'relationship';
 let busy = false;
-let msgs = []; // current chat messages
+let msgs = [];
 let currentId = null;
 let allChats = [];
-
 try { allChats = JSON.parse(localStorage.getItem('sb_chats') || '[]'); } catch(e) { allChats = []; }
 
-const SYSTEM = () => `You are SamajhBujh, an honest and caring Indian life advisor like a wise elder sibling.
+const SYSTEM = () => `You are SamajhBujh, an honest and caring Indian life advisor like a wise elder sibling (bada bhai/behen).
 
 You deeply understand Indian social reality:
-- Joint families, arranged marriages, parental pressure
-- "Log kya kahenge" culture
-- Middle class Indian struggles, office politics, friendship drama
+- Joint families and their politics
+- Arranged marriages and parental pressure
+- "Log kya kahenge" culture  
+- Middle class Indian struggles
+- Office politics, friendship drama
 
 Your style:
 - Reply in Hinglish (natural Hindi + English mix)
 - Keep it short — max 3 short paragraphs
-- Be honest but kind
+- Be honest but kind — give real advice, not just validation
 - No Western therapy jargon
-- Give practical advice that works in Indian context
+- Practical advice that actually works in Indian context
+- Sometimes ask one thoughtful question to make them think
 
 Current topic: ${topic}`;
 
@@ -224,9 +225,8 @@ function saveChat() {
   if (msgs.length === 0) return;
   const firstUser = msgs.find(m => m.role === 'user');
   if (!firstUser) return;
-  const title = firstUser.parts[0].text.slice(0, 45) + (firstUser.parts[0].text.length > 45 ? '…' : '');
-  const last = msgs[msgs.length - 1].parts[0].text;
-
+  const title = firstUser.content.slice(0, 45) + (firstUser.content.length > 45 ? '…' : '');
+  const last = msgs[msgs.length - 1].content;
   if (currentId) {
     const idx = allChats.findIndex(c => c.id === currentId);
     if (idx > -1) allChats[idx] = { ...allChats[idx], msgs: [...msgs], last, updatedAt: Date.now() };
@@ -255,7 +255,7 @@ function loadChat(id) {
   msgs = [...c.msgs];
   const chat = document.getElementById('chat');
   chat.innerHTML = '';
-  msgs.forEach(m => addMsg(m.parts[0].text, m.role === 'user' ? 'user' : 'bot'));
+  msgs.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'bot'));
   document.getElementById('suggestions').style.display = 'none';
   closeHistory();
 }
@@ -295,51 +295,51 @@ async function send() {
   busy = true;
 
   addMsg(text, 'user');
-  msgs.push({ role: 'user', parts: [{ text }] });
+  msgs.push({ role: 'user', content: text });
 
   const typing = addMsg('', 'typing');
 
   try {
-    // Build contents — inject system prompt into first user message
-    const contents = msgs.map((m, i) => {
-      if (i === 0 && m.role === 'user') {
-        return { role: 'user', parts: [{ text: SYSTEM() + '\n\nUser ka message: ' + m.parts[0].text }] };
-      }
-      return { role: m.role, parts: m.parts };
-    });
+    const messages = [
+      { role: 'system', content: SYSTEM() },
+      ...msgs
+    ];
 
-    const res = await fetch(URL, {
+    const res = await fetch(OR_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + OR_KEY,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'SamajhBujh'
+      },
       body: JSON.stringify({
-        contents: contents,
-        generationConfig: {
-          temperature: 0.85,
-          maxOutputTokens: 400,
-          topP: 0.9
-        }
+        model: MODEL,
+        messages: messages,
+        max_tokens: 400,
+        temperature: 0.85
       })
     });
 
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.error?.message || 'API error ' + res.status);
+      throw new Error(err.error?.message || 'Error ' + res.status);
     }
 
     const data = await res.json();
     typing.remove();
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const reply = data.choices?.[0]?.message?.content;
     if (!reply) throw new Error('Empty reply');
 
-    msgs.push({ role: 'model', parts: [{ text: reply }] });
+    msgs.push({ role: 'assistant', content: reply });
     addMsg(reply, 'bot');
     saveChat();
 
   } catch(e) {
     typing.remove();
-    console.error('SamajhBujh error:', e.message);
-    addMsg('Yaar, ek minute network issue ho gaya — dobara try karo! 🙏', 'bot');
+    console.error('Error:', e.message);
+    addMsg('Yaar, kuch gadbad ho gayi — dobara try karo! 🙏', 'bot');
   }
 
   busy = false;
